@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Cart | Krispy Box</title>
+
+    <link rel="stylesheet"
+          href="assets/css/style.css">
+
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <a href="index.html"
+       class="logo-link">
+
+        <span class="logo-text">
+            KRISPY<span>BOX</span>
+        </span>
+
+    </a>
+
+    <ul class="nav-links">
+
+        <li>
+            <a href="index.html">
+                Home
+            </a>
+        </li>
+
+        <li>
+            <a href="menu.html">
+                Menu
+            </a>
+        </li>
+
+        <li>
+            <a href="cart.html">
+                Cart
+            </a>
+        </li>
+
+        <li>
+            <a href="profile.html">
+                Profile
+            </a>
+        </li>
+
+        <li>
+            <a href="login.html"
+               class="login-btn">
+                Login
+            </a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<h1 class="title">
+    Your Cart
+</h1>
+
+
+<!-- CART PRODUCTS -->
+
+<div
+    class="products-grid"
+    id="cartProducts"
+    style="padding:40px;">
+</div>
+
+
+<!-- EMPTY CART -->
+
+<div
+    id="emptyCart"
+    style="
+        display:none;
+        text-align:center;
+        padding:50px;
+    ">
+
+    <h2>
+        Your cart is empty
+    </h2>
+
+    <p>
+        Add some delicious items
+        from our menu!
+    </p>
+
+    <a href="menu.html"
+       class="btn">
+
+        View Menu
+
+    </a>
+
+</div>
+
+
+<!-- TOTAL -->
+
+<div
+    class="checkout-box"
+    id="checkoutBox">
+
+    <h2>
+
+        Total:
+        R<span id="cartTotal">
+            0.00
+        </span>
+
+    </h2>
+
+    <a href="checkout.html"
+       class="btn">
+
+        Proceed To Checkout →
+
+    </a>
+
+</div>
+
+
+<script src="assets/js/cart.js"></script>
+
+</body>
+
+</html>

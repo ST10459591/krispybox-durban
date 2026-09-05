@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Checkout | Krispy Box</title>
+
+    <link rel="stylesheet"
+          href="assets/css/style.css">
+
+</head>
+
+<body>
+
+
+<nav class="navbar">
+
+    <a href="index.html"
+       class="logo-link">
+
+        <span class="logo-text">
+            KRISPY<span>BOX</span>
+        </span>
+
+    </a>
+
+    <ul class="nav-links">
+
+        <li>
+            <a href="index.html">
+                Home
+            </a>
+        </li>
+
+        <li>
+            <a href="menu.html">
+                Menu
+            </a>
+        </li>
+
+        <li>
+            <a href="cart.html">
+                Cart
+            </a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<div class="form-container">
+
+    <form id="checkoutForm">
+
+        <h1>
+            Checkout
+        </h1>
+
+
+        <h2 style="color:#ffffff; margin-bottom:20px;">
+
+            Total:
+            R<span id="checkoutTotal">
+                0.00
+            </span>
+
+        </h2>
+
+
+        <label for="payment">
+            Payment Method
+        </label>
+
+
+        <select
+            id="payment"
+            required>
+
+            <option value="">
+                Select Payment Method
+            </option>
+
+            <option value="Cash On Delivery">
+                Cash On Delivery
+            </option>
+
+            <option value="Card Payment">
+                Card Payment
+            </option>
+
+            <option value="Card Payment">
+                Cash Collection
+            </option>
+
+        </select>
+
+
+        <button type="submit">
+            Place Order →
+        </button>
+
+
+        <br><br>
+
+
+        <a href="cart.html"
+           class="btn">
+
+            Back to Cart
+
+        </a>
+
+    </form>
+
+</div>
+
+
+<div
+    id="orderSuccess"
+    class="form-container"
+    style="
+        display:none;
+        text-align:center;
+    ">
+
+    <div>
+
+        <h1>
+            Order Placed Successfully!
+        </h1>
+
+        <p>
+            Thank you for your order.
+        </p>
+
+        <p>
+            Your order has been received
+            and is being processed.
+        </p>
+
+        <a href="index.html"
+           class="btn">
+
+            Back to Home
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<script src="assets/js/checkout.js"></script>
+
+</body>
+
+</html>

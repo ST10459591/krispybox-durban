@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | Krispy Box</title>
+
+    <link rel="stylesheet"
+          href="../assets/css/style.css">
+
+</head>
+
+<body>
+
+
+<div class="profile">
+
+    <h1>
+        Admin Dashboard
+    </h1>
+
+
+    <p>
+        Manage your products
+        and website from here.
+    </p>
+
+
+    <br>
+
+
+    <a
+        href="addproduct.html"
+        class="btn">
+
+        + Add Product
+
+    </a>
+
+
+    <br><br>
+
+
+    <a
+        href="../menu.html"
+        class="btn">
+
+        View Menu
+
+    </a>
+
+
+    <br><br>
+
+
+    <a
+        href="../index.html"
+        class="btn">
+
+        Back to Website
+
+    </a>
+
+
+    <br><br>
+
+
+    <button
+        onclick="logout()"
+        class="btn">
+
+        Logout
+
+    </button>
+
+</div>
+
+
+<script>
+
+    // Check admin login
+
+    if (
+        localStorage.getItem(
+            "adminLoggedIn"
+        ) !== "true"
+    ) {
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // Logout
+
+    function logout() {
+
+        localStorage.removeItem(
+            "adminLoggedIn"
+        );
+
+        localStorage.removeItem(
+            "adminUsername"
+        );
+
+        window.location.href =
+            "login.html";
+
+    }
+
+</script>
+
+</body>
+
+</html>
