@@ -1,121 +1,341 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Krispy Box</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 
-    <link rel="stylesheet"
-          href="../assets/css/style.css">
+    <style>
+        .manage-products {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
 
+        .admin-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .admin-product-card {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+            color: #222;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-product-card img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .admin-product-card h3 {
+            margin: 12px 0 8px;
+        }
+
+        .product-status {
+            font-weight: bold;
+        }
+
+        .remove-product-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            background: #c62828;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .remove-product-btn:hover {
+            background: #a51e1e;
+        }
+
+        .activate-product-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .empty-products {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .dashboard-message {
+            text-align: center;
+            margin: 20px;
+        }
+    </style>
 </head>
 
 <body>
+    <header class="profile">
+        <h1>Admin Dashboard</h1>
+        <p>Manage your Krispy Box menu and products.</p>
 
+        <div class="admin-actions">
+            <a href="addproduct.html" class="btn">+ Add Product</a>
+            <a href="../menu.html" class="btn">View Menu</a>
+            <a href="../index.html" class="btn">Back to Website</a>
+            <button type="button" id="logoutBtn" class="btn">
+                Logout
+            </button>
+        </div>
+    </header>
 
-<div class="profile">
+    <main class="manage-products">
+        <h2>Manage Products</h2>
+        <p>Activate or deactivate items available on the customer menu.</p>
 
-    <h1>
-        Admin Dashboard
-    </h1>
+        <p id="dashboardMessage" class="dashboard-message" role="status">
+            Checking administrator access...
+        </p>
 
+        <div id="adminProducts" class="admin-products-grid"></div>
+    </main>
 
-    <p>
-        Manage your products
-        and website from here.
-    </p>
+    <script type="module">
+        import { auth, db } from "../firebase.js";
 
+        import {
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
-    <br>
+        import {
+            collection,
+            getDocs,
+            doc,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+        const container = document.getElementById("adminProducts");
+        const message = document.getElementById("dashboardMessage");
+        const logoutBtn = document.getElementById("logoutBtn");
 
-    <a
-        href="addproduct.html"
-        class="btn">
+        let authorizedAdmin = false;
+        let loadingProducts = false;
 
-        + Add Product
+        function showMessage(text, isError = false) {
+            message.textContent = text;
+            message.style.color = isError ? "#c62828" : "#555";
+        }
 
-    </a>
+        function getImagePath(image) {
+            if (!image) return "";
 
+            // Admin pages are inside the admin folder.
+            if (image.startsWith("assets/")) {
+                return "../" + image;
+            }
 
-    <br><br>
+            return image;
+        }
 
+        function showEmptyMessage(text) {
+            const paragraph = document.createElement("p");
+            paragraph.className = "empty-products";
+            paragraph.textContent = text;
+            container.replaceChildren(paragraph);
+        }
 
-    <a
-        href="../menu.html"
-        class="btn">
+        async function renderProducts() {
+            if (!authorizedAdmin || loadingProducts) return;
 
-        View Menu
+            loadingProducts = true;
+            showMessage("Loading products...");
+            container.replaceChildren();
 
-    </a>
+            try {
+                const snapshot = await getDocs(collection(db, "products"));
 
+                if (snapshot.empty) {
+                    showEmptyMessage(
+                        "No products have been added yet. Select Add Product to get started."
+                    );
+                    showMessage("Your product list is empty.");
+                    return;
+                }
 
-    <br><br>
+                container.replaceChildren();
 
+                snapshot.forEach((productDoc) => {
+                    const product = {
+                        id: productDoc.id,
+                        ...productDoc.data()
+                    };
 
-    <a
-        href="../index.html"
-        class="btn">
+                    const card = document.createElement("article");
+                    card.className = "admin-product-card";
 
-        Back to Website
+                    if (product.image) {
+                        const image = document.createElement("img");
+                        image.src = getImagePath(product.image);
+                        image.alt = product.name || "Product image";
+                        image.onerror = () => {
+                            image.style.display = "none";
+                        };
+                        card.appendChild(image);
+                    }
 
-    </a>
+                    const name = document.createElement("h3");
+                    name.textContent = product.name || "Unnamed product";
 
+                    const description = document.createElement("p");
+                    description.textContent = product.description || "";
 
-    <br><br>
+                    const price = document.createElement("p");
+                    const amount = Number(product.price);
+                    price.textContent = "Price: R" +
+                        (Number.isFinite(amount) ? amount.toFixed(2) : "0.00");
 
+                    const status = document.createElement("p");
+                    status.className = "product-status";
+                    status.textContent = product.active === true
+                        ? "Status: Active"
+                        : "Status: Inactive";
 
-    <button
-        onclick="logout()"
-        class="btn">
+                    const toggleButton = document.createElement("button");
+                    toggleButton.type = "button";
+                    toggleButton.className = product.active === true
+                        ? "remove-product-btn"
+                        : "activate-product-btn";
 
-        Logout
+                    toggleButton.textContent = product.active === true
+                        ? "Deactivate Product"
+                        : "Activate Product";
 
-    </button>
+                    toggleButton.addEventListener("click", async () => {
+                        if (!authorizedAdmin) {
+                            showMessage("Administrator access is required.", true);
+                            return;
+                        }
 
-</div>
+                        const nextActive = product.active !== true;
+                        const action = nextActive ? "activate" : "deactivate";
 
+                        if (!confirm(
+                            `Are you sure you want to ${action} "${product.name}"?`
+                        )) {
+                            return;
+                        }
 
-<script>
+                        toggleButton.disabled = true;
 
-    // Check admin login
+                        try {
+                            await updateDoc(
+                                doc(db, "products", product.id),
+                                { active: nextActive }
+                            );
 
-    if (
-        localStorage.getItem(
-            "adminLoggedIn"
-        ) !== "true"
-    ) {
+                            showMessage(
+                                `"${product.name}" has been ${nextActive ? "activated" : "deactivated"}.`
+                            );
 
-        window.location.href =
-            "login.html";
+                            await renderProducts();
+                        } catch (error) {
+                            console.error("Product update error:", error);
+                            showMessage(
+                                "Unable to update this product. Check your Firestore rules.",
+                                true
+                            );
+                            toggleButton.disabled = false;
+                        }
+                    });
 
-    }
+                    card.append(
+                        name,
+                        description,
+                        price,
+                        status,
+                        toggleButton
+                    );
 
+                    container.appendChild(card);
+                });
 
-    // Logout
+                showMessage("Products loaded successfully.");
+            } catch (error) {
+                console.error("Error loading products:", error);
+                showMessage(
+                    "Unable to load products. Check your connection and Firestore rules.",
+                    true
+                );
+                showEmptyMessage("Products could not be loaded.");
+            } finally {
+                loadingProducts = false;
+            }
+        }
 
-    function logout() {
+        onAuthStateChanged(auth, async (user) => {
+            authorizedAdmin = false;
 
-        localStorage.removeItem(
-            "adminLoggedIn"
-        );
+            if (!user) {
+                window.location.replace("../login.html");
+                return;
+            }
 
-        localStorage.removeItem(
-            "adminUsername"
-        );
+            try {
+                const { getDoc } = await import(
+                    "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js"
+                );
 
-        window.location.href =
-            "login.html";
+                const profile = await getDoc(doc(db, "users", user.uid));
 
-    }
+                if (!profile.exists() || profile.data().role !== "admin") {
+                    showMessage("Access denied. Administrator access is required.", true);
+                    await signOut(auth);
+                    window.location.replace("../login.html");
+                    return;
+                }
 
-</script>
+                authorizedAdmin = true;
+                await renderProducts();
+            } catch (error) {
+                console.error("Administrator verification error:", error);
+                showMessage(
+                    "Could not verify administrator access. Please check your Firestore rules.",
+                    true
+                );
+            }
+        });
 
+        logoutBtn.addEventListener("click", async () => {
+            logoutBtn.disabled = true;
+
+            try {
+                await signOut(auth);
+                window.location.replace("../login.html");
+            } catch (error) {
+                console.error("Logout error:", error);
+                showMessage("Unable to log out. Please try again.", true);
+                logoutBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
-
 </html>
