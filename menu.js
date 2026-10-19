@@ -1,140 +1,148 @@
-// Get products saved by the admin
 
-let products =
-    JSON.parse(localStorage.getItem("products")) || [];
+import { db } from "../../firebase.js";
+import {
+    collection,
+    getDocs,
+    query,
+    where
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-const productsContainer =
-    document.getElementById("productsContainer");
+const productsContainer = document.getElementById("productsContainer");
 
+let products = [];
 
-// If there are no products
+function showMessage(message) {
+    productsContainer.replaceChildren();
 
-if (products.length === 0) {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = message;
+    paragraph.style.cssText =
+        "color:#666;text-align:center;width:100%;";
 
-    productsContainer.innerHTML = `
-        <p style="
-            color:#666;
-            text-align:center;
-            width:100%;
-        ">
-            No products available yet.
-        </p>
-    `;
-
+    productsContainer.appendChild(paragraph);
 }
 
+// Load active products from Firestore.
+async function loadProducts() {
+    showMessage("Loading menu...");
 
-// Display products
-
-products.forEach(function(product) {
-
-    const card = document.createElement("div");
-
-    card.className = "food-card";
-
-    card.innerHTML = `
-
-        <img
-            src="${product.image}"
-            alt="${product.name}"
-            class="food-image"
-        >
-
-        <div class="food-content">
-
-            <h3>
-                ${product.name}
-            </h3>
-
-            <p>
-                ${product.description}
-            </p>
-
-            <div class="price-cart">
-
-                <span class="price">
-                    R${Number(product.price).toFixed(2)}
-                </span>
-
-                <button
-                    class="cart-btn"
-                    onclick="addToCart(${product.id})"
-                >
-                    Add To Cart
-                </button>
-
-            </div>
-
-        </div>
-    `;
-
-    productsContainer.appendChild(card);
-
-});
-
-
-// Add product to cart
-
-function addToCart(productId) {
-
-    const product =
-        products.find(
-            item => item.id === productId
+    try {
+        const productsQuery = query(
+            collection(db, "products"),
+            where("active", "==", true)
         );
 
-    if (!product) {
+        const snapshot = await getDocs(productsQuery);
 
-        alert("Product not found.");
+        products = snapshot.docs.map((document) => ({
+            id: document.id,
+            ...document.data()
+        }));
 
-        return;
+        if (products.length === 0) {
+            showMessage("No products available yet.");
+            return;
+        }
 
+        displayProducts();
+    } catch (error) {
+        console.error("Error loading products:", error);
+        showMessage(
+            "We couldn't load the menu. Please try again later."
+        );
     }
+}
 
+// Display the products.
+function displayProducts() {
+    productsContainer.replaceChildren();
 
-    let cart =
-        JSON.parse(localStorage.getItem("cart")) || [];
+    products.forEach((product) => {
+        const card = document.createElement("div");
+        card.className = "food-card";
 
+        const image = document.createElement("img");
+        image.src = product.image || "";
+        image.alt = product.name || "Menu item";
+        image.className = "food-image";
 
-    const existingProduct =
-        cart.find(
-            item => item.id === productId
-        );
+        image.onerror = () => {
+            image.style.display = "none";
+        };
 
+        const content = document.createElement("div");
+        content.className = "food-content";
 
-    if (existingProduct) {
+        const name = document.createElement("h3");
+        name.textContent = product.name || "Unnamed product";
 
-        existingProduct.quantity++;
+        const description = document.createElement("p");
+        description.textContent = product.description || "";
 
-    } else {
+        const priceCart = document.createElement("div");
+        priceCart.className = "price-cart";
 
-        cart.push({
+        const price = document.createElement("span");
+        price.className = "price";
+        price.textContent = `R${Number(product.price).toFixed(2)}`;
 
-            id: product.id,
+        const button = document.createElement("button");
+        button.className = "cart-btn";
+        button.textContent = "Add To Cart";
 
-            name: product.name,
-
-            description: product.description,
-
-            price: Number(product.price),
-
-            image: product.image,
-
-            quantity: 1
-
+        button.addEventListener("click", () => {
+            addToCart(product.id);
         });
 
+        priceCart.append(price, button);
+        content.append(name, description, priceCart);
+        card.append(image, content);
+        productsContainer.appendChild(card);
+    });
+}
+
+// Keep the cart in localStorage for now.
+function addToCart(productId) {
+    const product = products.find((item) => item.id === productId);
+
+    if (!product) {
+        alert("Product not found.");
+        return;
     }
 
+    let cart = [];
 
-    localStorage.setItem(
-        "cart",
-        JSON.stringify(cart)
+    try {
+        cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        if (!Array.isArray(cart)) {
+            cart = [];
+        }
+    } catch {
+        cart = [];
+    }
+
+    const existingProduct = cart.find(
+        (item) => item.id === productId
     );
 
+    if (existingProduct) {
+        existingProduct.quantity =
+            Number(existingProduct.quantity || 0) + 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            description: product.description || "",
+            price: Number(product.price),
+            image: product.image || "",
+            quantity: 1
+        });
+    }
 
-    alert(
-        product.name +
-        " has been added to your cart!"
-    );
+    localStorage.setItem("cart", JSON.stringify(cart));
 
+    alert(`${product.name} has been added to your cart!`);
 }
+
+loadProducts();
