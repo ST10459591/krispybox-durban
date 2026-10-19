@@ -1,3 +1,412 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile | Krispy Box</title>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    
+<style>
+    .profile-page {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+        color: #111111;
+    }
+
+    .profile-header {
+        background: #111111;
+        color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+
+    .profile-header h1,
+    .profile-header h2 {
+        color: #ffffff;
+    }
+
+    .profile-header p {
+        color: #f1f1f1;
+    }
+
+    .profile-header .profile-section-label {
+        color: #ffbe0b;
+    }
+
+    .profile-card {
+        background: #ffffff;
+        color: #111111;
+        padding: 25px;
+        margin-bottom: 22px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-card h2 {
+        color: #111111;
+        margin-top: 0;
+        border-bottom: 2px solid #e63946;
+        padding-bottom: 12px;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .profile-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .profile-field label {
+        color: #111111;
+        font-weight: 600;
+    }
+
+    .profile-field input,
+    .profile-field select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
+        color: #111111;
+        background: #ffffff;
+        border: 1px solid #aaaaaa;
+        border-radius: 6px;
+        font: inherit;
+    }
+
+    .profile-field input:disabled {
+        background: #f1f1f1;
+        color: #555555;
+        border-color: #cccccc;
+        opacity: 1;
+    }
+
+    .profile-field input:focus,
+    .profile-field select:focus {
+        outline: 2px solid #e63946;
+        outline-offset: 2px;
+        border-color: #e63946;
+    }
+
+    .profile-field input::placeholder {
+        color: #666666;
+        opacity: 1;
+    }
+
+    .profile-field small {
+        color: #555555;
+    }
+
+    .profile-full-width {
+        grid-column: 1 / -1;
+    }
+
+    .profile-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 15px 0;
+        color: #222222;
+    }
+
+    .profile-option input {
+        width: auto;
+        accent-color: #e63946;
+    }
+
+    .profile-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .profile-secondary-btn {
+        background: #111111;
+        color: #ffffff;
+        border: 2px solid #111111;
+        padding: 12px 18px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .profile-secondary-btn:hover {
+        background: #333333;
+        border-color: #333333;
+    }
+
+    .profile-page .btn {
+        color: #ffffff;
+    }
+
+    .profile-message {
+        display: none;
+        margin: 15px 0;
+        padding: 12px 15px;
+        border-radius: 6px;
+        font-weight: 600;
+        background: #f1f1f1;
+        color: #111111;
+    }
+
+    .profile-muted {
+        color: #555555;
+        line-height: 1.6;
+    }
+
+    .profile-section-label {
+        color: #e63946;
+        font-size: 0.85rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    @media (max-width: 650px) {
+        .profile-page {
+            margin: 20px auto;
+            padding: 12px;
+        }
+
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-full-width {
+            grid-column: auto;
+        }
+
+        .profile-card,
+        .profile-header {
+            padding: 20px;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="logo-link">
+        <span class="logo-text">KRISPY<span>BOX</span></span>
+    </a>
+
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="menu.html">Menu</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="profile.html">Profile</a></li>
+    </ul>
+</nav>
+
+<main class="profile-page">
+
+    <header class="profile-header">
+        <span class="profile-section-label">Your account</span>
+        <h1>My Profile</h1>
+        <p>Manage your personal details, delivery information and preferences.</p>
+
+        <h2 id="profileName">Loading your profile...</h2>
+        <p id="profileEmail">Loading email...</p>
+    </header>
+
+    <div id="profileMessage"
+         class="profile-message"
+         role="status"
+         aria-live="polite"></div>
+
+    <form id="profileForm">
+
+        <section class="profile-card">
+            <h2>Personal Information</h2>
+            <p class="profile-muted">
+                Keep your contact information up to date.
+            </p>
+
+            <div class="profile-grid">
+                <div class="profile-field profile-full-width">
+                    <label for="fullNameInput">Full name</label>
+                    <input type="text"
+                           id="fullNameInput"
+                           name="fullname"
+                           autocomplete="name"
+                           required>
+                </div>
+
+                <div class="profile-field profile-full-width">
+                    <label for="phoneInput">Phone number</label>
+                    <input type="tel"
+                           id="phoneInput"
+                           name="phone"
+                           autocomplete="tel"
+                           placeholder="e.g. 071 234 5678">
+                </div>
+
+                <div class="profile-field profile-full-width">
+                    <label>Email address</label>
+                    <input type="email"
+                           id="emailDisplay"
+                           value=""
+                           disabled>
+                    <small>Your email is managed by your sign-in account.</small>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-card">
+            <h2>Delivery Information</h2>
+            <p class="profile-muted">
+                Save your usual delivery details to make future checkouts easier.
+            </p>
+
+            <div class="profile-grid">
+                <div class="profile-field profile-full-width">
+                    <label for="addressInput">Street address</label>
+                    <input type="text"
+                           id="addressInput"
+                           name="address"
+                           autocomplete="street-address"
+                           placeholder="House number and street">
+                </div>
+
+                <div class="profile-field">
+                    <label for="suburbInput">Suburb</label>
+                    <input type="text"
+                           id="suburbInput"
+                           name="suburb"
+                           autocomplete="address-level3">
+                </div>
+
+                <div class="profile-field">
+                    <label for="cityInput">City or town</label>
+                    <input type="text"
+                           id="cityInput"
+                           name="city"
+                           autocomplete="address-level2">
+                </div>
+
+                <div class="profile-field">
+                    <label for="provinceInput">Province</label>
+                    <select id="provinceInput" name="province">
+                        <option value="">Select province</option>
+                        <option value="Eastern Cape">Eastern Cape</option>
+                        <option value="Free State">Free State</option>
+                        <option value="Gauteng">Gauteng</option>
+                        <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                        <option value="Limpopo">Limpopo</option>
+                        <option value="Mpumalanga">Mpumalanga</option>
+                        <option value="Northern Cape">Northern Cape</option>
+                        <option value="North West">North West</option>
+                        <option value="Western Cape">Western Cape</option>
+                    </select>
+                </div>
+
+                <div class="profile-field">
+                    <label for="postalCodeInput">Postal code</label>
+                    <input type="text"
+                           id="postalCodeInput"
+                           name="postalCode"
+                           inputmode="numeric"
+                           autocomplete="postal-code">
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-card">
+            <h2>Communication Preferences</h2>
+            <p class="profile-muted">
+                Choose how you would prefer Krispy Box to contact you.
+            </p>
+
+            <div class="profile-field">
+                <label for="preferredContact">Preferred contact method</label>
+                <select id="preferredContact" name="preferredContact">
+                    <option value="email">Email</option>
+                    <option value="sms">SMS</option>
+                    <option value="phone">Phone call</option>
+                </select>
+            </div>
+
+            <label class="profile-option">
+                <input type="checkbox" id="emailNotifications">
+                Receive promotional and menu updates by email
+            </label>
+
+            <label class="profile-option">
+                <input type="checkbox" id="smsNotifications">
+                Receive promotional updates by SMS
+            </label>
+
+            <p class="profile-muted">
+                These preferences are for optional promotional messages.
+                Essential account and order messages may still be sent when needed.
+            </p>
+        </section>
+
+        <div class="profile-actions">
+            <button type="submit" class="btn">
+                Save Changes
+            </button>
+
+            <button type="reset" class="profile-secondary-btn">
+                Reset Form
+            </button>
+        </div>
+
+    </form>
+
+    <section class="profile-card">
+        <h2>Security</h2>
+        <p class="profile-muted">
+            Keep your account secure. You can request a password reset email
+            if you want to change your password.
+        </p>
+
+        <div class="profile-actions">
+            <button type="button"
+                    id="resetPasswordBtn"
+                    class="profile-secondary-btn">
+                Reset Password
+            </button>
+
+            <button type="button"
+                    id="logoutBtn"
+                    class="btn">
+                Log Out
+            </button>
+        </div>
+    </section>
+
+    <section class="profile-card">
+        <h2>My Orders</h2>
+        <p class="profile-muted">
+            Your order history will appear here once the checkout system
+            is connected to your saved Firebase orders.
+        </p>
+
+        <a href="menu.html" class="btn">
+            Browse Menu
+        </a>
+    </section>
+
+</main>
+
+<script type="module" src="assets/js/profile.js"></script>
+
+</body>
+</html>
+=======
 <!DOCTYPE html>
 <html lang="en">
 
@@ -114,3 +523,4 @@
 </body>
 
 </html>
+>>>>>>> 79890c90a2c7a8a1dda5c6e4e20cd620e09113a1

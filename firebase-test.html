@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krispy Box - Firebase Test</title>
+</head>
+<body>
+    <h1>Krispy Box - Firebase Test</h1>
+    <p id="status">Step 1: Loading test page...</p>
+
+    <script type="module">
+        const status = document.getElementById("status");
+
+        status.textContent = "Step 2: Loading Firebase modules...";
+
+        try {
+            const { db } = await import("./firebase.js");
+            const { doc, getDoc } = await import(
+                "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js"
+            );
+
+            status.textContent = "Step 3: Firebase loaded. Testing Firestore...";
+
+            try {
+                await getDoc(doc(db, "connection_test", "test"));
+                status.textContent =
+                    "SUCCESS: Firestore responded and the read was allowed.";
+            } catch (error) {
+                console.error("Firestore request failed:", error);
+                status.textContent =
+                    "FIRESTORE ERROR: " + error.code + " — " + error.message;
+            }
+        } catch (error) {
+            console.error("Firebase module failed to load:", error);
+            status.textContent =
+                "MODULE ERROR: " + error.message;
+        }
+    </script>
+</body>
+</html>

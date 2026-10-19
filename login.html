@@ -1,27 +1,25 @@
+<<<<<<< HEAD
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Admin Login | Krispy Box</title>
-
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>Login | Krispy Box</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <div class="form-container">
         <form id="loginForm">
-            <h1>Admin Login</h1>
+            <h1>Welcome Back</h1>
 
-            <p id="loginError"
-               style="color:red; display:none; margin-bottom:15px; text-align:center;">
-                Invalid email or password.
-            </p>
+            <p id="loginMessage" style="display:none;"></p>
 
             <input
                 type="email"
                 id="email"
-                placeholder="Email address"
+                name="email"
+                placeholder="Email Address"
                 autocomplete="username"
                 required
             >
@@ -29,6 +27,7 @@
             <input
                 type="password"
                 id="password"
+                name="password"
                 placeholder="Password"
                 autocomplete="current-password"
                 required
@@ -38,15 +37,102 @@
 
             <br><br>
 
-            <a href="../index.html" class="btn">
-                ← Back to Website
-            </a>
+            <a href="register.html">Don't have an account? Create Account</a>
+
+            <br><br>
+
+            <a href="index.html">← Back to Home</a>
         </form>
     </div>
 
-    <script src="../assets/js/login.js"></script>
-
+    <script type="module" src="assets/js/customerlogin.js"></script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | Krispy Box</title>
+
+    <link rel="stylesheet"
+          href="../assets/css/style.css">
+
+</head>
+
+<body>
 
 
+<div class="form-container">
+
+    <form id="loginForm">
+
+        <h1>
+            Admin Login
+        </h1>
+
+
+        <p
+            id="loginError"
+            style="
+                color:red;
+                display:none;
+                margin-bottom:15px;
+                text-align:center;
+            ">
+
+            Invalid Login Details
+
+        </p>
+
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Username"
+            required
+        >
+
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+        >
+
+
+        <button type="submit">
+            Login →
+        </button>
+
+
+        <br><br>
+
+
+        <a
+            href="../index.html"
+            class="btn">
+
+            ← Back to Website
+
+        </a>
+
+    </form>
+
+</div>
+
+
+<script src="../assets/js/login.js"></script>
+
+</body>
+
+</html>
+
+>>>>>>> 79890c90a2c7a8a1dda5c6e4e20cd620e09113a1
