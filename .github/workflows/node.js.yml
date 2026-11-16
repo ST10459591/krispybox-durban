@@ -1,0 +1,46 @@
+name: Krispy Box Durban CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Check Krispy Box Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Check backend JavaScript syntax
+        run: node --check backend/server.js
+
+      - name: Check frontend server syntax
+        run: node --check server.cjs
+
+      - name: Verify frontend files
+        run: |
+          test -f index.html
+          test -f login.html
+          test -f register.html
+          test -f menu.html
+          test -f cart.html
+          test -f checkout.html
+          test -f admin/dashboard.html
+          test -f admin/inventory.html
+
+      - name: Workflow completed
+        run: echo "Krispy Box Durban CI checks passed!"
