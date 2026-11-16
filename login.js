@@ -1,43 +1,55 @@
 const loginForm = document.getElementById("loginForm");
-
 const loginError = document.getElementById("loginError");
 
-loginForm.addEventListener("submit", function(event) {
-
+loginForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const username =
-        document.getElementById("username").value.trim();
+    loginError.style.display = "none";
 
-    const password =
-        document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-    const demoUsername = "admin";
+    try {
+        // Authenticate with Supabase
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
 
-    const demoPassword = "admin123";
+        if (error) {
+            loginError.textContent = "Invalid email or password.";
+            loginError.style.display = "block";
+            return;
+        }
 
-    if (
-        username === demoUsername &&
-        password === demoPassword
-    ) {
+        // Verify administrator permissions
+        const { data: admin, error: adminError } =
+            await supabaseClient
+                .from("admin_users")
+                .select("user_id")
+                .eq("user_id", data.user.id)
+                .maybeSingle();
 
-        localStorage.setItem(
-            "adminLoggedIn",
-            "true"
-        );
+        if (adminError || !admin) {
+            await supabaseClient.auth.signOut();
 
-        localStorage.setItem(
-            "adminUsername",
-            username
-        );
+            loginError.textContent =
+                "This account is not authorized as an administrator.";
 
-        window.location.href =
-            "dashboard.html";
+            loginError.style.display = "block";
+            return;
+        }
 
-    } else {
+        // Login successful
+        window.location.href = "dashboard.html";
+
+    } catch (err) {
+        console.error("Login error:", err);
+
+        loginError.textContent =
+            "Unable to connect. Please try again.";
 
         loginError.style.display = "block";
-
     }
-
 });

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management | Krispy Box</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <style>
+        .inventory-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .inventory-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .inventory-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .summary-card {
+            background: #fff;
+            color: #222;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .summary-card strong {
+            font-size: 28px;
+        }
+
+        .inventory-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .inventory-tabs button {
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            color: #222;
+            cursor: pointer;
+        }
+
+        .inventory-tabs button.selected {
+            background: #222;
+            color: #fff;
+        }
+
+        .inventory-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            background: #fff;
+            color: #222;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .inventory-form input,
+        .inventory-form select,
+        .inventory-form button {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font: inherit;
+        }
+
+        .inventory-form button {
+            background: #222;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .inventory-table-wrapper {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #222;
+        }
+
+        .inventory-table th,
+        .inventory-table td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .inventory-table th {
+            background: #f3f3f3;
+        }
+
+        .inventory-table button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+            cursor: pointer;
+        }
+
+        .stock-low {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .stock-good {
+            color: #237a48;
+            font-weight: bold;
+        }
+
+        .inventory-message {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .inventory-form input:focus,
+        .inventory-form select:focus {
+            outline: 2px solid #555;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="profile">
+        <h1>Inventory Management</h1>
+        <p>Track ingredients and finished products for Krispy Box.</p>
+
+        <div class="inventory-actions">
+            <a href="dashboard.html" class="btn">
+                Back to Dashboard
+            </a>
+        </div>
+    </header>
+
+    <main class="inventory-container">
+        <p id="inventoryMessage" class="inventory-message" role="status">
+            Checking administrator access...
+        </p>
+
+        <section class="inventory-summary">
+            <div class="summary-card">
+                <h3>Total Stock Items</h3>
+                <strong id="totalItems">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>Low Stock</h3>
+                <strong id="lowStock">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>Out of Stock</h3>
+                <strong id="outOfStock">0</strong>
+            </div>
+        </section>
+
+        <div class="inventory-tabs">
+            <button type="button" id="ingredientsTab" class="selected">
+                Ingredients & Supplies
+            </button>
+
+            <button type="button" id="productsTab">
+                Finished Products
+            </button>
+        </div>
+
+        <section>
+            <h2 id="sectionTitle">Ingredients & Supplies</h2>
+            <p>Add items and record the stock available.</p>
+
+            <form id="inventoryForm" class="inventory-form">
+                <input
+                    type="text"
+                    id="itemName"
+                    placeholder="Item name"
+                    aria-label="Item name"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="itemQuantity"
+                    placeholder="Quantity"
+                    aria-label="Quantity"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+                <select id="itemUnit" aria-label="Unit">
+                    <option value="pieces">Pieces</option>
+                    <option value="kg">Kilograms</option>
+                    <option value="litres">Litres</option>
+                    <option value="packs">Packs</option>
+                </select>
+
+                <input
+                    type="number"
+                    id="minimumStock"
+                    placeholder="Minimum stock"
+                    aria-label="Minimum stock"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+                <button type="submit" id="addStockBtn">
+                    Add Stock Item
+                </button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Current Inventory</h2>
+
+            <div class="inventory-table-wrapper">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Minimum</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventoryTableBody">
+                        <tr>
+                            <td colspan="5">Loading inventory...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { auth, db } from "../firebase.js";
+
+        import {
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+        import {
+            collection,
+            getDocs,
+            getDoc,
+            doc,
+            addDoc,
+            updateDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+        const message = document.getElementById("inventoryMessage");
+        const form = document.getElementById("inventoryForm");
+        const tableBody = document.getElementById("inventoryTableBody");
+
+        const ingredientsTab = document.getElementById("ingredientsTab");
+        const productsTab = document.getElementById("productsTab");
+        const sectionTitle = document.getElementById("sectionTitle");
+
+        const totalItems = document.getElementById("totalItems");
+        const lowStock = document.getElementById("lowStock");
+        const outOfStock = document.getElementById("outOfStock");
+
+        const addStockBtn = document.getElementById("addStockBtn");
+
+        let authorizedAdmin = false;
+        let currentCollection = "ingredients";
+        let inventoryItems = [];
+
+        function showMessage(text, isError = false) {
+            message.textContent = text;
+            message.style.color = isError ? "#c62828" : "#555";
+        }
+
+        function getStockStatus(item) {
+            if (item.quantity <= 0) {
+                return "Out of Stock";
+            }
+
+            if (item.quantity <= item.minimumStock) {
+                return "Low Stock";
+            }
+
+            return "In Stock";
+        }
+
+        function updateSummary() {
+            totalItems.textContent = inventoryItems.length;
+
+            lowStock.textContent = inventoryItems.filter(
+                item => item.quantity > 0 &&
+                    item.quantity <= item.minimumStock
+            ).length;
+
+            outOfStock.textContent = inventoryItems.filter(
+                item => item.quantity <= 0
+            ).length;
+        }
+
+        function renderInventory() {
+            tableBody.replaceChildren();
+
+            if (inventoryItems.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+
+                cell.colSpan = 5;
+                cell.textContent = "No inventory items added yet.";
+
+                row.appendChild(cell);
+                tableBody.appendChild(row);
+                return;
+            }
+
+            inventoryItems.forEach(item => {
+                const row = document.createElement("tr");
+
+                const nameCell = document.createElement("td");
+                nameCell.textContent = item.name;
+
+                const quantityCell = document.createElement("td");
+                quantityCell.textContent = `${item.quantity} ${item.unit}`;
+
+                const minimumCell = document.createElement("td");
+                minimumCell.textContent = `${item.minimumStock} ${item.unit}`;
+
+                const statusCell = document.createElement("td");
+                const status = getStockStatus(item);
+
+                statusCell.textContent = status;
+                statusCell.className = status === "In Stock"
+                    ? "stock-good"
+                    : "stock-low";
+
+                const actionCell = document.createElement("td");
+                const updateButton = document.createElement("button");
+
+                updateButton.type = "button";
+                updateButton.textContent = "Update Stock";
+
+                updateButton.addEventListener("click", async () => {
+                    if (!authorizedAdmin) return;
+
+                    const input = prompt(
+                        `Enter the new total quantity for ${item.name}:`,
+                        item.quantity
+                    );
+
+                    if (input === null) return;
+
+                    if (input.trim() === "") {
+                        showMessage("Please enter a quantity.", true);
+                        return;
+                    }
+
+                    const quantity = Number(input);
+
+                    if (!Number.isFinite(quantity) || quantity < 0) {
+                        showMessage("Please enter a valid quantity.", true);
+                        return;
+                    }
+
+                    updateButton.disabled = true;
+
+                    try {
+                        await updateDoc(
+                            doc(db, currentCollection, item.id),
+                            {
+                                quantity,
+                                updatedAt: serverTimestamp()
+                            }
+                        );
+
+                        showMessage(`${item.name} stock updated successfully.`);
+                        await loadInventory();
+                    } catch (error) {
+                        console.error("Stock update error:", error);
+                        showMessage("Unable to update stock.", true);
+                    } finally {
+                        updateButton.disabled = false;
+                    }
+                });
+
+                actionCell.appendChild(updateButton);
+
+                row.append(
+                    nameCell,
+                    quantityCell,
+                    minimumCell,
+                    statusCell,
+                    actionCell
+                );
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function loadInventory() {
+            if (!authorizedAdmin) return;
+
+            const collectionName = currentCollection;
+
+            showMessage("Loading inventory...");
+
+            try {
+                const snapshot = await getDocs(
+                    collection(db, collectionName)
+                );
+
+                if (collectionName !== currentCollection) return;
+
+                inventoryItems = snapshot.docs.map(itemDoc => ({
+                    id: itemDoc.id,
+                    ...itemDoc.data()
+                }));
+
+                updateSummary();
+                renderInventory();
+
+                showMessage("Inventory loaded successfully.");
+            } catch (error) {
+                console.error("Inventory loading error:", error);
+                showMessage(
+                    "Unable to load inventory. Check your Firestore rules.",
+                    true
+                );
+            }
+        }
+
+        function switchTab(collectionName) {
+            currentCollection = collectionName;
+            inventoryItems = [];
+
+            ingredientsTab.classList.toggle(
+                "selected",
+                collectionName === "ingredients"
+            );
+
+            productsTab.classList.toggle(
+                "selected",
+                collectionName === "finishedProducts"
+            );
+
+            sectionTitle.textContent = collectionName === "ingredients"
+                ? "Ingredients & Supplies"
+                : "Finished Products";
+
+            tableBody.replaceChildren();
+            updateSummary();
+            loadInventory();
+        }
+
+        ingredientsTab.addEventListener("click", () => {
+            switchTab("ingredients");
+        });
+
+        productsTab.addEventListener("click", () => {
+            switchTab("finishedProducts");
+        });
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            if (!authorizedAdmin) {
+                showMessage("Administrator access is required.", true);
+                return;
+            }
+
+            const name = document.getElementById("itemName").value.trim();
+            const quantity = Number(
+                document.getElementById("itemQuantity").value
+            );
+            const unit = document.getElementById("itemUnit").value;
+            const minimumStock = Number(
+                document.getElementById("minimumStock").value
+            );
+
+            if (
+                !name ||
+                !Number.isFinite(quantity) ||
+                !Number.isFinite(minimumStock) ||
+                quantity < 0 ||
+                minimumStock < 0
+            ) {
+                showMessage("Please enter valid stock details.", true);
+                return;
+            }
+
+            addStockBtn.disabled = true;
+
+            try {
+                await addDoc(collection(db, currentCollection), {
+                    name,
+                    quantity,
+                    unit,
+                    minimumStock,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+
+                form.reset();
+
+                showMessage("Stock item added successfully.");
+                await loadInventory();
+            } catch (error) {
+                console.error("Add stock error:", error);
+                showMessage(
+                    "Unable to add stock. Check your Firestore rules.",
+                    true
+                );
+            } finally {
+                addStockBtn.disabled = false;
+            }
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            authorizedAdmin = false;
+
+            if (!user) {
+                window.location.replace("../login.html");
+                return;
+            }
+
+            try {
+                const profile = await getDoc(
+                    doc(db, "users", user.uid)
+                );
+
+                if (!profile.exists() || profile.data().role !== "admin") {
+                    showMessage(
+                        "Access denied. Administrator access is required.",
+                        true
+                    );
+                    window.location.replace("../login.html");
+                    return;
+                }
+
+                authorizedAdmin = true;
+                await loadInventory();
+            } catch (error) {
+                console.error("Admin verification error:", error);
+                showMessage(
+                    "Could not verify administrator access.",
+                    true
+                );
+            }
+        });
+    </script>
+</body>
+</html>
